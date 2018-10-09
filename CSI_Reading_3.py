@@ -37,13 +37,11 @@ class AnalogPlot:
       try:
           line = self.ser.readline()
           data = np.int8(line)
+          print(data)
           line2 = self.ser.readline()
-
-
           imag =np.int8(line2)
           # print data
           self.add(data)
-
           a1.set_data(range(self.maxLen), self.ay)
       except KeyboardInterrupt:
           print('exiting')

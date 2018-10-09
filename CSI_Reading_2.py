@@ -12,7 +12,7 @@ import numpy as np
 
 
 class serialPlot:
-    def __init__(self, serialPort = '/dev/ttyUSB0', serialBaud = 115200, plotLength = 100, dataNumBytes = 2):
+    def __init__(self, serialPort = '/dev/ttyUSB0', serialBaud = 115200, plotLength = 100, dataNumBytes = 4):
         self.port = serialPort
         self.baud = serialBaud
         self.plotMaxLength = plotLength
@@ -46,8 +46,11 @@ class serialPlot:
         self.plotTimer = int((currentTimer - self.previousTimer) * 1000)     # the first reading will be erroneous
         self.previousTimer = currentTimer
         timeText.set_text('Plot Interval = ' + str(self.plotTimer) + 'ms')
-        value,  = struct.unpack('f', self.rawData)    # use 'h' for a 2 byte integer
+
+        value,  = struct.unpack('h', self.rawData)    # use 'h' for a 2 byte integer
+
         value = np.int8(value)
+
         self.data.append(value)    # we get the latest data point and append it to our array
         lines.set_data(range(self.plotMaxLength), self.data)
         lineValueText.set_text('[' + lineLabel + '] = ' + str(value))

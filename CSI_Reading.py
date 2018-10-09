@@ -2,11 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import serial
+import math
 
 fig, ax = plt.subplots()
-line, = ax.plot(np.random.rand(10))
-ax.set_ylim(-100, 100)
-xdata, ydata = [0]*200, [0]*200
+line, = ax.plot(np.random.rand(1000))
+ax.set_ylim(0, 80)
+xdata, ydata = [0]*1000, [0]*1000
 raw = serial.Serial("/dev/ttyUSB0",115200)
 
 def update(data):
@@ -25,16 +26,26 @@ def run(data):
 def data_gen():
     t = 0
     while True:
-        t+=0.1
+        t+=0.5
+        if (t==1000):
+            t = 0
+
         try:
-            dat = np.int8(raw.readline())
             real = np.int8(raw.readline())
+            if(abs(real)>80):
+                real = np.int8(raw.readline())
+                if (abs(real) > 80):
+                    real = np.int8(raw.readline())
+                    real = np.int8(raw.readline())
+
             imag = np.int8(raw.readline())
+            amplitude = math.sqrt(pow(real,2)+pow(imag,2))
         except:
             dat = 0
-            real =0
-        yield t, real
+            real = np.int8(raw.readline())
+        yield t, amplitude
 
 
 ani = animation.FuncAnimation(fig, run, data_gen, interval=0, blit=True)
+plt.grid(True)
 plt.show()
