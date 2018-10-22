@@ -6,7 +6,7 @@ import math
 
 fig, ax = plt.subplots()
 line, = ax.plot(np.random.rand(1000))
-ax.set_ylim(0, 80)
+ax.set_ylim(-30, 30)
 xdata, ydata = [0]*1000, [0]*1000
 raw = serial.Serial("/dev/ttyUSB0",115200)
 
@@ -25,27 +25,25 @@ def run(data):
 
 def data_gen():
     t = 0
+    real =0
+    amplitude =0
     while True:
-        t+=0.5
+        t+=1
         if (t==1000):
             t = 0
 
         try:
             real = np.int8(raw.readline())
-            if(abs(real)>80):
-                real = np.int8(raw.readline())
-                if (abs(real) > 80):
-                    real = np.int8(raw.readline())
-                    real = np.int8(raw.readline())
-
             imag = np.int8(raw.readline())
             amplitude = math.sqrt(pow(real,2)+pow(imag,2))
+
         except:
             dat = 0
-            real = np.int8(raw.readline())
+
         yield t, amplitude
 
 
 ani = animation.FuncAnimation(fig, run, data_gen, interval=0, blit=True)
+
 plt.grid(True)
 plt.show()
